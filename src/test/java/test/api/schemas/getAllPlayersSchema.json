@@ -1,0 +1,43 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema#",
+  "type": "array",
+  "items": [
+    {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer"
+        },
+        "created_at": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "agent_groups": {
+          "type": "array",
+          "items": {}
+        },
+        "days_limit": {
+          "type": "integer"
+        },
+        "roles": {
+          "type": "array",
+          "items": {}
+        }
+      },
+      "required": [
+        "id",
+        "created_at",
+        "updated_at",
+        "name",
+        "agent_groups",
+        "days_limit",
+        "roles"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd" >
+<suite name="API suite" >
+    <test name="Swagger" parallel="methods" thread-count="3">
+        <classes>
+            <class name="test.api.SpribeTest"/>
+        </classes>
+    </test>
+</suite>
