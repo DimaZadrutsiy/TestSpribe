@@ -140,7 +140,6 @@ public class SpribeTest extends BaseApiTest {
                 .queryParams(params)
                 .get("/player/create/{editor}")
                 .then().log().all();
-        logger.info("We get the code 400 this is an error, in the documentation there is no return of a 400 error.");
     }
 
     @Test
