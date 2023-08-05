@@ -23,7 +23,6 @@ import static org.hamcrest.Matchers.notNullValue;
 
 public class SpribeTest extends BaseApiTest {
     Logger logger = LoggerFactory.getLogger(SpribeTest.class);
-    private String pathToSchema = "src/test/java/test/api/schemas/";
 
     @Test
     public void testCheckAgeAllPlayers() {
@@ -45,6 +44,7 @@ public class SpribeTest extends BaseApiTest {
         logger.info("Checking the scheme of the response from the server to the getAllPlayers request");
         logger.info("The test fails because the return scheme does not match the documentation of the swagger");
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
+        String pathToSchema = "src/test/java/test/api/schemas/";
         given()
                 .when()
                 .get("player/get/all")
@@ -54,9 +54,9 @@ public class SpribeTest extends BaseApiTest {
     }
 
     @Test
-    public void testCheckRolePlayerByPlayerId() {
+    public void testCheckRolePlayerById() {
         logger.info("Checking that under id number 1 the user has the role of supervisor");
-        String expectedRole = RoleType.SUPERVISOR.getStatus();;
+        String expectedRole = RoleType.SUPERVISOR.getStatus();
 
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         JsonPath jsonPath = given()
@@ -76,6 +76,20 @@ public class SpribeTest extends BaseApiTest {
                 .jsonPath();
         String actualRole = jsonPath.get("role");
         Assert.assertEquals(actualRole, expectedRole, "The user has the wrong role");
+    }
+
+    @Test
+    public void testNegativeCheckCodeResponseGetPlayerByNotValidId() {
+        logger.info("When sending a request with a non-existent id, we expect to receive a 404 code from the server, "
+                + "the response is 200");
+        int idNotValidPlayer = 0;
+
+        Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeNotFound404());
+        given()
+                .when()
+                .body(new RequestGetPlayerByIdDtoDirector().idPlayer(idNotValidPlayer))
+                .post("player/get")
+                .then().log().all();
     }
 
     @Test
@@ -118,7 +132,8 @@ public class SpribeTest extends BaseApiTest {
     @Test
     public void testNegativeCreatePlayerWithInvalidAgeForbidden403() {
         logger.info("Create new player with invalid age, expect 403 forbidden");
-        logger.info("We get the code 400 this is an error, in the documentation there is no return of a 400 error.");
+        logger.info("We get code 400 this is an error, there is no return of error 400 in the documentation, you need "
+                + "to create a bug or fix the documentation.");
         String editor = RoleType.SUPERVISOR.getStatus();
         String login = NameGenerator.getFullName();
         String screenName = NameGenerator.getNickname();
@@ -244,17 +259,15 @@ public class SpribeTest extends BaseApiTest {
         int idPlayer = idDto.getPlayerId();
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         PlayersUtility.getPlayersByIdDto(idPlayer);
-        UpdatePlayerDto updateData = new UpdatePlayerDtoDirector().updatePlayerNotValidData();
+        UpdatePlayerDto updateNotValidData = new UpdatePlayerDtoDirector().updatePlayerNotValidData();
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeForbidden403());
         given()
                 .when()
                 .pathParam("editor", editor)
                 .pathParam("id", idPlayer)
-                .body(updateData)
+                .body(updateNotValidData)
                 .patch("/player/update/{editor}/{id}")
-                .then().log().all()
-                .extract()
-                .jsonPath();
+                .then().log().all();
     }
 
     @Test
@@ -270,9 +283,7 @@ public class SpribeTest extends BaseApiTest {
                 .pathParam("editor", editor)
                 .body(idDto)
                 .delete("/player/delete/{editor}")
-                .then().log().all()
-                .extract()
-                .jsonPath();
+                .then().log().all();
 
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         JsonPath listPlayers = PlayersUtility.getListPlayers();

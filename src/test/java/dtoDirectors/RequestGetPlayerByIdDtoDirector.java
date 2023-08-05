@@ -29,7 +29,6 @@ public class RequestGetPlayerByIdDtoDirector {
     }
 
     public RequestGetPlayerByIdDto idPlayer(int id) {
-        JsonPath listPlayers = PlayersUtility.getListPlayers();
         return builder()
                 .playerId(id)
                 .build();
