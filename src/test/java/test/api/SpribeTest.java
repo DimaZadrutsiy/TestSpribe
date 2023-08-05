@@ -312,6 +312,25 @@ public class SpribeTest extends BaseApiTest {
     }
 
     @Test
+    public void testNegativeRoleUserDeletePlayer() {
+        logger.info("The user deletes the player, he does not have such a right, we should get a 403 error,"
+                + " and we get a 204, this is a bug");
+
+        String editor = RoleType.USER.getStatus();
+
+        Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
+        RequestGetPlayerByIdDto idDto = new RequestGetPlayerByIdDtoDirector().idLastPlayer();
+
+        Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeForbidden403());
+        given()
+                .when()
+                .pathParam("editor", editor)
+                .body(idDto)
+                .delete("/player/delete/{editor}")
+                .then().log().all();
+    }
+
+    @Test
     public void testNegativeDeletePlayerSupervisor() {
         logger.info("Delete a player with supervisor role");
 
