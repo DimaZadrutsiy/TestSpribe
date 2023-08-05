@@ -14,6 +14,7 @@ public class UpdatePlayerDtoDirector {
         String login = NameGenerator.getFullName();
         String screenName = NameGenerator.getNickname();
         String password = PasswordGenerator.getPassword();
+
         return builder()
                 .age(age)
                 .gender("male")
@@ -29,6 +30,7 @@ public class UpdatePlayerDtoDirector {
         String login = NameGenerator.getFullName();
         String screenName = NameGenerator.getNickname();
         String password = "3c";
+
         return builder()
                 .age(age)
                 .gender("zero")

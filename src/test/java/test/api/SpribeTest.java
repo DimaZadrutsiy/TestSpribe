@@ -27,6 +27,7 @@ public class SpribeTest extends BaseApiTest {
     @Test
     public void testCheckAgeAllPlayers() {
         logger.info("Test to check the respective ages of all players");
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         List<PlayersDto> players = given()
                 .when()
@@ -36,6 +37,7 @@ public class SpribeTest extends BaseApiTest {
                 .body()
                 .jsonPath()
                 .getList("players", PlayersDto.class);
+
         players.forEach(d -> Assert.assertTrue(d.getAge() >= 16 && d.getAge() <= 60));
     }
 
@@ -43,6 +45,7 @@ public class SpribeTest extends BaseApiTest {
     public void testGetAllPlayersCheckSchemaOK200() {
         logger.info("Checking the scheme of the response from the server to the getAllPlayers request");
         logger.info("The test fails because the return scheme does not match the documentation of the swagger");
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         String pathToSchema = "src/test/java/test/api/schemas/";
         given()
@@ -75,6 +78,7 @@ public class SpribeTest extends BaseApiTest {
                 .body()
                 .jsonPath();
         String actualRole = jsonPath.get("role");
+
         Assert.assertEquals(actualRole, expectedRole, "The user has the wrong role");
     }
 
@@ -95,6 +99,7 @@ public class SpribeTest extends BaseApiTest {
     @Test
     public void testCreatePlayer() {
         logger.info("Create a new player and check by its id that it is displayed in the list upon request getAllPlayers");
+
         String editor = RoleType.SUPERVISOR.getStatus();
         int age = IntegerGenerator.getValue(16, 60);
         String login = NameGenerator.getFullName();
@@ -134,6 +139,7 @@ public class SpribeTest extends BaseApiTest {
         logger.info("Create new player with invalid age, expect 403 forbidden");
         logger.info("We get code 400 this is an error, there is no return of error 400 in the documentation, you need "
                 + "to create a bug or fix the documentation.");
+
         String editor = RoleType.SUPERVISOR.getStatus();
         String login = NameGenerator.getFullName();
         String screenName = NameGenerator.getNickname();
@@ -161,6 +167,7 @@ public class SpribeTest extends BaseApiTest {
     public void testNegativeCreatePlayerWithInvalidGenderForbidden403() {
         logger.info("Create new player with invalid gender expect 403 forbidden");
         logger.info("We get 200 code is a bug.");
+
         String editor = RoleType.SUPERVISOR.getStatus();
         int age = IntegerGenerator.getValue(16, 60);
         String login = NameGenerator.getFullName();
@@ -188,6 +195,7 @@ public class SpribeTest extends BaseApiTest {
     public void testNegativeCreatePlayerWithInvalidPasswordForbidden403() {
         logger.info("Create new player with invalid gender expect 403 forbidden");
         logger.info("We get 200 code is a bug.");
+
         String editor = RoleType.SUPERVISOR.getStatus();
         int age = IntegerGenerator.getValue(16, 60);
         String login = NameGenerator.getFullName();
@@ -213,15 +221,19 @@ public class SpribeTest extends BaseApiTest {
     }
 
     @Test
-    public void testUpdatePlayer() {
-        logger.info("Update the player and compare his data before and after the update.");
+    public void testUpdateLastPlayer() {
+        logger.info("Update the last player and compare his data before and after the update.");
+
         String editor = RoleType.SUPERVISOR.getStatus();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         RequestGetPlayerByIdDto idDto = new RequestGetPlayerByIdDtoDirector().idLastPlayer();
         int idPlayer = idDto.getPlayerId();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         JsonPath playerUntilUpdate = PlayersUtility.getPlayersByIdDto(idPlayer);
         UpdatePlayerDto updateData = new UpdatePlayerDtoDirector().updatePlayer();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         JsonPath playerAfterUpdate = given()
                 .when()
@@ -253,13 +265,17 @@ public class SpribeTest extends BaseApiTest {
     public void testNegativeUpdatePlayerNotValidData() {
         logger.info("Update the player not valid data.");
         logger.info("We expect to receive a 403 error, the data is updated and the code 200 comes.");
+
         String editor = RoleType.SUPERVISOR.getStatus();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         RequestGetPlayerByIdDto idDto = new RequestGetPlayerByIdDtoDirector().idLastPlayer();
         int idPlayer = idDto.getPlayerId();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         PlayersUtility.getPlayersByIdDto(idPlayer);
         UpdatePlayerDto updateNotValidData = new UpdatePlayerDtoDirector().updatePlayerNotValidData();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeForbidden403());
         given()
                 .when()
@@ -273,10 +289,13 @@ public class SpribeTest extends BaseApiTest {
     @Test
     public void testDeletePlayer() {
         logger.info("Delete a player and check by his id that he is no longer listed in the getAllPlayers requests");
+
         String editor = RoleType.SUPERVISOR.getStatus();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         RequestGetPlayerByIdDto idDto = new RequestGetPlayerByIdDtoDirector().idLastPlayer();
         int idPlayer = idDto.getPlayerId();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeNoContent204());
         given()
                 .when()
@@ -295,9 +314,12 @@ public class SpribeTest extends BaseApiTest {
     @Test
     public void testNegativeDeletePlayerSupervisor() {
         logger.info("Delete a player with supervisor role");
+
         String editor = RoleType.SUPERVISOR.getStatus();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeOK200());
         RequestGetPlayerByIdDto idDto = new RequestGetPlayerByIdDtoDirector().idFirstPlayer();
+
         Specifications.installSpec(Specifications.requestSpecification(), Specifications.responseCodeForbidden403());
         given()
                 .when()
